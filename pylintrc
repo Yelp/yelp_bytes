@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable=missing-docstring,abstract-method,old-style-class,no-init,invalid-name,no-member,no-self-use,too-many-public-methods
+disable=missing-docstring,abstract-method,old-style-class,no-init,invalid-name,no-self-use,too-many-public-methods
 
 [REPORTS]
 output-format=colorized
@@ -12,7 +12,7 @@ const-rgx=(([A-Za-z_][A-Za-z0-9_]*)|(__.*__))$
 max-line-length=131
 
 [TYPECHECK]
-ignored-classes=pytest
+ignored-classes=pytest,testify
 
 [DESIGN]
 min-public-methods=0

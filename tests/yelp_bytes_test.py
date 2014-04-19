@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import testify as T
 
-from yelp_bytes.bytes import to_bytes, to_utf8, from_bytes, from_utf8
+from yelp_bytes import to_bytes, to_utf8, from_bytes, from_utf8
 
 
 # Define some interesting unicode inputs
