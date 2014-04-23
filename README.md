@@ -1,5 +1,7 @@
 # yelp_bytes
 
+[![Build Status](https://travis-ci.org/Yelp/yelp_bytes.svg?branch=master)](https://travis-ci.org/Yelp/yelp_bytes)
+
 yelp_bytes contains several utility functions to help ensure that the data you're using is always either Unicode or byte strings, taking care of the edge cases for you so that you don't have to worry about them. We do all of this by leveraging our [yelp_encodings](https://github.com/Yelp/yelp_encodings) library to handle the encoding and decoding of data to and from Unicode.
 
 ## Installation
