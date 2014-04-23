@@ -2,37 +2,50 @@
 
 [![Build Status](https://travis-ci.org/Yelp/yelp_bytes.svg?branch=master)](https://travis-ci.org/Yelp/yelp_bytes)
 
-yelp_bytes contains several utility functions to help ensure that the data you're using is always either Unicode or byte strings, taking care of the edge cases for you so that you don't have to worry about them. We do all of this by leveraging our [yelp_encodings](https://github.com/Yelp/yelp_encodings) library to handle the encoding and decoding of data to and from Unicode.
+yelp_bytes contains several utility functions to help ensure that the data you're using is always either Unicode or byte strings, taking care of the edge cases for you so that you don't have to worry about them. We handle ambiguous bytestrings by leveraging our our ["internet" encoding](https://github.com/Yelp/yelp_encodings). This allows you to write functions that need unicode, but can accept arbitrary values, without crashing.
+
 
 ## Installation
 
-Installation is easy with ``pip``! The package lives on PyPI so all you have to do is run
+For a primer on pip and virtualenv, see the [Python Packaging User Guide](https://python-packaging-user-guide.readthedocs.org/en/latest/tutorial.html).
 
-```
-$ pip install yelp_bytes
-```
+TL;DR: `pip install yelp_bytes`
 
-And you're off!
 
 ## Usage
 
-All you need to do is import yelp_bytes into your code.
+The `from_bytes` function is the most interesting one. It takes an object and returns its unicode representation.
+This function never fails, except for extremely rare edge cases (that we haven't ourselves encountered).  `from_utf8` is
+similar, but uses 'UTF-8' rather than 'internet' encoding, and so will fail if given poorly-encoded bytes. `to_bytes`
+and `to_utf8` both take an object and return its UTF-8 bytestring representation.
 
-```
-import yelp_bytes
+    python
+    >>> import yelp_bytes
 
-yelp_bytes.to_utf8('Hello world!')  # => 'Hello World!'
-yelp_bytes.to_bytes('Hello world!') # => 'Hello World!'
+    >>> euro = u'€'
 
-yelp_bytes.from_utf8('Hello world!')  # => u'Hello World!'
-yelp_bytes.from_bytes('Hello world!') # => u'Hello World'
-```
+    >>> print yelp_bytes.from_bytes(euro.encode('UTF-8'))
+    €
+    >>> print yelp_bytes.from_bytes(euro.encode('cp1252'))
+    €
+    >>> print yelp_bytes.from_bytes(euro)
+    €
 
-You have four functions available to you:
 
-1. ``to_bytes`` encodes to utf-8 bytestrings
-2. ``from_bytes`` decodes values to unambiguous unicode characters
-3. ``to_utf8`` encodes unicode text to utf-8 bytes
-4. ``from_utf8`` decodes utf-8 bytes to unicode text
+We also handle objects with (certain common classes of) encoding issues, and all the other various edge cases we've
+encountered.
 
-Check out the source to learn more about the input parameters and return values.
+    python
+    >>> error = AssertionError(euro)
+    >>> print error
+    Traceback (most recent call last):
+        ...
+    UnicodeEncodeError: 'ascii' codec can't encode character u'\u20ac' in position 0: ordinal not in range(128)
+
+    >>> print yelp_bytes.from_utf8(error)
+    €
+    >>> yelp_bytes.to_utf8(error) == euro.encode('UTF-8')
+    True
+
+
+Check out [the source](https://github.com/Yelp/yelp_bytes/blob/HEAD/yelp_bytes.py) to learn more about the input parameters and return values.
