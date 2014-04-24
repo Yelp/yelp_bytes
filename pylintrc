@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable=missing-docstring,abstract-method,old-style-class,no-init,invalid-name,no-self-use,too-many-public-methods
+disable=missing-docstring,abstract-method,old-style-class,no-init,no-self-use,too-many-public-methods
 
 [REPORTS]
 output-format=colorized
