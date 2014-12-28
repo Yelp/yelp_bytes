@@ -1,8 +1,0 @@
--e .
-
-coverage
-flake8
-mock
-pylint
-testify
-git+git://github.com/pre-commit/pre-commit#egg=pre_commit

@@ -4,3 +4,4 @@ env: # These should match the tox env list
     - TOXENV=py27
 install: pip install tox --use-mirrors
 script: tox
+sudo: false
