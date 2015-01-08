@@ -18,8 +18,9 @@ class UNICODE:
 class DunderCompat(object):
     # pylint: disable=no-member
     def __str__(self):
+        # Dispatch to what str() actually means on this Python version
         try:
-            if type("") is bytes:
+            if sys.version_info < (3,):
                 return self.__bytes__()
             else:
                 return self.__unicode__()
