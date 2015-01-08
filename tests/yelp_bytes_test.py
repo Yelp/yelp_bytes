@@ -15,7 +15,7 @@ class UNICODE:
     utf8 = bmp + u'🐵'  # Monkey-face emoji. This requires at least a three-byte encoding.
 
 
-class DunderCompat(object):
+class DunderCompat(object):  # pragma: no cover
     # pylint: disable=no-member
     def __str__(self):
         # Dispatch to what str() actually means on this Python version
