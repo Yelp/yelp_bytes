@@ -4,6 +4,8 @@ from yelp_encodings import internet
 
 internet.register()
 
+text_type = type(u"")
+
 
 def to_bytes(obj, encoding='internet'):
     """
@@ -12,11 +14,11 @@ def to_bytes(obj, encoding='internet'):
 
     This function always returns utf8-encoded bytes.
     """
-    if isinstance(obj, str):
+    if isinstance(obj, bytes):
         # In this case we have to assume it's already utf8.
         return obj
     else:
-        return unicode(obj).encode(encoding)
+        return text_type(obj).encode(encoding)
 
 
 def from_bytes(obj, encoding='internet', errors='strict'):
@@ -26,17 +28,17 @@ def from_bytes(obj, encoding='internet', errors='strict'):
 
     This function always returns unicode.
     """
-    if isinstance(obj, unicode):
+    if isinstance(obj, text_type):
         return obj
     try:
-        return unicode(obj, encoding, errors)
+        return text_type(obj, encoding, errors)
     except TypeError:
         # We're only allowed to specify an encoding for str values, for whatever reason.
         try:
-            return unicode(obj)
+            return text_type(obj)
         except UnicodeDecodeError:
             # You get this (for example) when an error object contains utf8 bytes.
-            return unicode(str(obj), encoding, errors)
+            return text_type(bytes(obj), encoding, errors)
 
 
 def to_utf8(obj):

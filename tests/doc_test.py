@@ -1,3 +1,12 @@
+import sys
+
+import pytest
+
+
+@pytest.mark.skipif(
+    sys.version_info >= (3,),
+    reason="Python 3 doesn't have the AssertionError problem",
+)
 def test_docs():
     from doctest import testfile, ELLIPSIS
     failures, _ = testfile(
