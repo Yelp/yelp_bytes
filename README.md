@@ -11,6 +11,8 @@ For a primer on pip and virtualenv, see the [Python Packaging User Guide](https:
 
 TL;DR: `pip install yelp_bytes`
 
+This module does work on Python 3, but is likely to be a no-op the vast majority of the time: Python 3 code usually works with decoded text internally, and several of the language issues this module tries to address have been fixed.
+
 
 ## Usage
 
@@ -24,11 +26,11 @@ and `to_utf8` both take an object and return its UTF-8 bytestring representation
 
     >>> euro = u'€'
 
-    >>> print yelp_bytes.from_bytes(euro.encode('UTF-8'))
+    >>> print(yelp_bytes.from_bytes(euro.encode('UTF-8')))
     €
-    >>> print yelp_bytes.from_bytes(euro.encode('cp1252'))
+    >>> print(yelp_bytes.from_bytes(euro.encode('cp1252')))
     €
-    >>> print yelp_bytes.from_bytes(euro)
+    >>> print(yelp_bytes.from_bytes(euro))
     €
 
 
@@ -37,12 +39,12 @@ encountered.
 
     python
     >>> error = AssertionError(euro)
-    >>> print error
+    >>> print(error)
     Traceback (most recent call last):
         ...
     UnicodeEncodeError: 'ascii' codec can't encode character u'\u20ac' in position 0: ordinal not in range(128)
 
-    >>> print yelp_bytes.from_utf8(error)
+    >>> print(yelp_bytes.from_utf8(error))
     €
     >>> yelp_bytes.to_utf8(error) == euro.encode('UTF-8')
     True
