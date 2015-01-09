@@ -1,36 +1,51 @@
 # -*- coding: utf-8 -*-
-import sys
+from __future__ import unicode_literals
 
 import pytest
 
-from yelp_bytes import to_bytes, to_utf8, from_bytes, from_utf8, text_type
+from yelp_bytes import to_bytes, to_utf8, from_bytes, from_utf8, unicode
 
 
 # Define some interesting unicode inputs
 class UNICODE:
-    ascii = u'A'  # The most basic of unicode.
-    latin1 = ascii + u'ü'  # U-umlaut. This is defined in latin1 but not ascii.
-    win1252 = latin1 + u'€'  # Euro sign. This is defined in windows-1252, but not latin1.
-    bmp = win1252 + u'Ł'  # Polish crossed-L. This requires at least a two-byte encoding.
-    utf8 = bmp + u'🐵'  # Monkey-face emoji. This requires at least a three-byte encoding.
+    ascii = 'A'  # The most basic of unicode.
+    latin1 = ascii + 'ü'  # U-umlaut. This is defined in latin1 but not ascii.
+    win1252 = latin1 + '€'  # Euro sign. This is defined in windows-1252, but not latin1.
+    bmp = win1252 + 'Ł'  # Polish crossed-L. This requires at least a two-byte encoding.
+    utf8 = bmp + '🐵'  # Monkey-face emoji. This requires at least a three-byte encoding.
 
 
-class DunderCompat(object):
-    # pylint: disable=no-member
-    def __str__(self):
-        try:
-            if type("") is bytes:
-                return self.__bytes__()
-            else:
-                return self.__unicode__()
-        except AttributeError:
-            return super(DunderCompat, self).__str__()
+def dunder_compat(cls):
+    if str is bytes:
+        if hasattr(cls, '__bytes__'):
+            cls.__str__ = cls.__bytes__
+            del cls.__bytes__
+    elif hasattr(cls, '__unicode__'):
+        cls.__str__ = cls.__unicode__
+        del cls.__unicode__
+    return cls
 
 
-skip_on_py3 = pytest.mark.skipif(
-    sys.version_info >= (3,),
-    reason="Python 3 str() doesn't fall back to decoding bytes()",
-)
+@dunder_compat
+class Unicodable:
+    """unicode() is fine, but bytes() will barf"""
+    def __unicode__(self):
+        return UNICODE.utf8
+
+
+@dunder_compat
+class Utf8able:
+    """bytes() and decode('UTF-8') is fine, but unicode() will barf"""
+    def __bytes__(self):
+        return UNICODE.utf8.encode('utf8')
+
+
+@dunder_compat
+class Win1252able:
+    """bytes() is fine, but unicode() and decode('UTF-8') will barf"""
+    def __bytes__(self):
+        return UNICODE.utf8.encode('windows-1252', 'ignore')
+
 
 both_from_funcs = pytest.mark.parametrize('testfunc', (from_bytes, from_utf8))
 both_to_funcs = pytest.mark.parametrize('testfunc', (to_bytes, to_utf8))
@@ -45,10 +60,19 @@ def test_with_unicode(testfunc):
 @both_from_funcs
 def test_with_unicode_subclass(testfunc):
     # Unicode subclasses (eg markupsafe) also go unmolested.
-    class MyString(text_type):
+    class MyText(unicode):
         pass
-    mystring = MyString("abcdef")
-    assert mystring is testfunc(mystring)
+    mytext = MyText("abcdef")
+    assert mytext is testfunc(mytext)
+
+
+@both_to_funcs
+def test_with_bytes_subclass(testfunc):
+    # it would make sense for the same (above) to hold of a bytes subclass
+    class MyBytes(bytes):
+        pass
+    mybytes = MyBytes(b"abcdef")
+    assert mybytes is testfunc(mybytes)
 
 
 @both_from_funcs
@@ -64,45 +88,29 @@ def test_with_win1252():
 
 
 @both_from_funcs
-def test_with_unicodable_object(testfunc):
-    class Unicodable(DunderCompat):
-        def __unicode__(self):
-            return UNICODE.utf8
-
+def test_from_funcs_with_unicodable_object(testfunc):
     unicodable = Unicodable()
     assert UNICODE.utf8 == testfunc(unicodable)
 
 
-@skip_on_py3
 @both_from_funcs
-def test_with_utf8able_object(testfunc):
-    class Utf8able(DunderCompat):
-        def __bytes__(self):
-            return UNICODE.utf8.encode('utf8')
+def test_from_funcs_with_utf8able_object(testfunc):
 
     utf8able = Utf8able()
     assert UNICODE.utf8 == testfunc(utf8able)
 
 
-class Win1252able(DunderCompat):
-    def __bytes__(self):
-        return UNICODE.utf8.encode('windows-1252', 'ignore')
-
-
-@skip_on_py3
-def test_with_win1252able_object():
+def test_from_bytes_with_win1252able_object():
     win1252able = Win1252able()
     assert UNICODE.win1252 == from_bytes(win1252able)
 
 
-@skip_on_py3
 def test_from_utf8_with_win1252():
     win1252 = UNICODE.utf8.encode('windows-1252', 'ignore')
     with pytest.raises(UnicodeDecodeError):
         from_utf8(win1252)
 
 
-@skip_on_py3
 def test_from_utf8_with_win1252able_object():
     win1252able = Win1252able()
     with pytest.raises(UnicodeDecodeError):
@@ -126,3 +134,21 @@ def test_to_bytes_from_bad_utf8(testfunc):
     win1252 = UNICODE.utf8.encode('windows-1252', 'ignore')
     assert UNICODE.win1252.encode('windows-1252') == win1252
     assert win1252 == testfunc(win1252)
+
+
+@both_to_funcs
+def test_to_funcs_with_unicodable_object(testfunc):
+    unicodable = Unicodable()
+    assert UNICODE.utf8.encode('UTF-8') == testfunc(unicodable)
+
+
+@both_to_funcs
+def test_to_funcs_with_utf8able_object(testfunc):
+    utf8able = Utf8able()
+    assert UNICODE.utf8.encode('UTF-8') == testfunc(utf8able)
+
+
+@both_to_funcs
+def test_to_funcs_with_win1252able_object(testfunc):
+    win1252able = Win1252able()
+    assert UNICODE.win1252.encode('windows-1252') == testfunc(win1252able)

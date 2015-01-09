@@ -2,17 +2,18 @@
 
 [![Build Status](https://travis-ci.org/Yelp/yelp_bytes.svg?branch=master)](https://travis-ci.org/Yelp/yelp_bytes)
 
-yelp_bytes contains several utility functions to help ensure that the data you're using is always either Unicode or byte strings, taking care of the edge cases for you so that you don't have to worry about them. We handle ambiguous bytestrings by leveraging our our ["internet" encoding](https://github.com/Yelp/yelp_encodings). This allows you to write functions that need unicode, but can accept arbitrary values, without crashing.
+yelp_bytes contains several utility functions to help ensure that the data you're using is always either Unicode or
+byte strings, taking care of the edge cases for you so that you don't have to worry about them. We handle ambiguous
+bytestrings by leveraging our our ["internet" encoding](https://github.com/Yelp/yelp_encodings). This allows you to
+write functions that need unicode but can accept arbitrary values without crashing.
 
 
 ## Installation
 
-For a primer on pip and virtualenv, see the [Python Packaging User Guide](https://python-packaging-user-guide.readthedocs.org/en/latest/tutorial.html).
+For a primer on pip and virtualenv, see the [Python Packaging User Guide](
+https://python-packaging-user-guide.readthedocs.org/en/latest/tutorial.html).
 
 TL;DR: `pip install yelp_bytes`
-
-This module does work on Python 3, but is likely to be a no-op the vast majority of the time: Python 3 code usually works with decoded text internally, and several of the language issues this module tries to address have been fixed.
-
 
 ## Usage
 
@@ -35,10 +36,10 @@ and `to_utf8` both take an object and return its UTF-8 bytestring representation
 
 
 We also handle objects with (certain common classes of) encoding issues, and all the other various edge cases we've
-encountered.
+encountered. One of the more common is putting non-ascii unicode into an error message:
 
     python
-    >>> error = AssertionError(euro)
+    >>> error = Exception(euro)
     >>> print(error)
     Traceback (most recent call last):
         ...
