@@ -41,7 +41,8 @@ def to_bytes(obj, encoding='internet', errors='strict'):
     if type is bytes:
         return obj
     else:
-        return obj.encode(encoding, errors)
+        # This is definitely unicode.
+        return obj.encode(encoding, errors)  # pylint:disable=maybe-no-member
 
 
 def from_bytes(obj, encoding='internet', errors='strict'):

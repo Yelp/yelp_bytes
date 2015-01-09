@@ -183,14 +183,15 @@ def test_windows_roundtrip(value):
     win1252able,
 ))
 def test_to_bytes_is_like_bytes(value):
+    # pylint:disable=bare-except
     try:
         bytes_result = bytes(value)
-    except Exception as error:
-        bytes_result = repr(error)
+    except:
+        bytes_result = '(error)'
 
     try:
         to_bytes_result = to_bytes(value, 'US-ASCII')
-    except Exception as error:
-        to_bytes_result = repr(error)
+    except:
+        to_bytes_result = '(error)'
 
     assert bytes_result == to_bytes_result
