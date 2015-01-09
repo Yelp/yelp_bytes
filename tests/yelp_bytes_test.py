@@ -175,3 +175,22 @@ def test_utf8_roundtrip(value):
 ))
 def test_windows_roundtrip(value):
     assert from_bytes(value, 'windows-1252') == to_bytes(value, 'windows-1252').decode('windows-1252')
+
+
+@pytest.mark.parametrize('value', (
+    UNICODE.utf8,
+    utf8able,
+    win1252able,
+))
+def test_to_bytes_is_like_bytes(value):
+    try:
+        bytes_result = bytes(value)
+    except Exception as error:
+        bytes_result = repr(error)
+
+    try:
+        to_bytes_result = to_bytes(value, 'US-ASCII')
+    except Exception as error:
+        to_bytes_result = repr(error)
+
+    assert bytes_result == to_bytes_result

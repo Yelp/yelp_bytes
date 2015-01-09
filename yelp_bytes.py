@@ -6,6 +6,28 @@ from yelp_encodings import internet
 
 internet.register()
 unicode = type("")
+PY2 = str is bytes
+
+
+def bytes_or_unicode(obj):
+    """Determine of an object is more canonically represented as bytes or unicode."""
+    mro = type(obj).mro()
+    if bytes in mro:
+        return bytes, obj
+    elif unicode in mro:
+        return unicode, obj
+    elif PY2:
+        # in python2, all objects are trivially represented as bytes, so we try unicode first.
+        try:
+            return unicode, unicode(obj)
+        except UnicodeDecodeError:
+            return bytes, bytes(obj)
+    else:  # PY3
+        # in python3, all objects are trivially represented as unicode, so we try bytes first.
+        try:
+            return bytes, bytes(obj)
+        except (UnicodeEncodeError, TypeError):
+            return unicode, unicode(obj)
 
 
 def to_bytes(obj, encoding='internet', errors='strict'):
@@ -15,19 +37,11 @@ def to_bytes(obj, encoding='internet', errors='strict'):
 
     This function always returns utf8-encoded bytes (unless given non-utf8 bytes).
     """
-    mro = type(obj).mro()
-    if bytes in mro:
+    type, obj = bytes_or_unicode(obj)
+    if type is bytes:
         return obj
-    elif unicode in mro:
+    else:
         return obj.encode(encoding, errors)
-    elif hasattr(obj, '__bytes__'):
-        return obj.__bytes__()
-
-    try:
-        return unicode(obj).encode(encoding, errors)
-    except UnicodeDecodeError:
-        # You get this (for example) when an error object contains utf8 bytes.
-        return bytes(obj)
 
 
 def from_bytes(obj, encoding='internet', errors='strict'):
@@ -37,19 +51,11 @@ def from_bytes(obj, encoding='internet', errors='strict'):
 
     This function always returns unicode.
     """
-    mro = type(obj).mro()
-    if unicode in mro:
-        return obj
-    elif bytes in mro:
+    type, obj = bytes_or_unicode(obj)
+    if type is bytes:
         return obj.decode(encoding, errors)
-    elif hasattr(obj, '__bytes__'):
-        return obj.__bytes__().decode(encoding, errors)
-
-    try:
-        return unicode(obj)
-    except UnicodeDecodeError:
-        # You get this (for example) when an error object contains utf8 bytes.
-        return bytes(obj).decode(encoding, errors)
+    else:
+        return obj
 
 
 def to_utf8(obj, errors='strict'):
