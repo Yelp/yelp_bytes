@@ -1,8 +1,9 @@
 # yelp_bytes
 
-[![Build Status](https://travis-ci.org/Yelp/yelp_bytes.svg?branch=master)](https://travis-ci.org/Yelp/yelp_bytes)
+[![Build Status](https://travis-ci.org/Yelp/yelp_bytes.svg?branch=master)](https://travis-ci.org/Yelp/yelp\_bytes)
+[![Coverage Status](https://img.shields.io/coveralls/Yelp/yelp_bytes.svg?branch=master)](https://coveralls.io/r/Yelp/yelp\_bytes?branch=master)
 
-yelp_bytes contains several utility functions to help ensure that the data you're using is always either Unicode or
+`yelp_bytes` contains several utility functions to help ensure that the data you're using is always either Unicode or
 byte strings, taking care of the edge cases for you so that you don't have to worry about them. We handle ambiguous
 bytestrings by leveraging our our ["internet" encoding](https://github.com/Yelp/yelp_encodings). This allows you to
 write functions that need unicode but can accept arbitrary values without crashing.
