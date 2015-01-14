@@ -5,6 +5,8 @@ import pytest
 
 from yelp_bytes import to_bytes, to_utf8, from_bytes, from_utf8, unicode
 
+PY2 = str is bytes
+
 
 # Define some interesting unicode inputs
 class UNICODE:
@@ -48,6 +50,17 @@ class Win1252able:
     def __bytes__(self):
         return UNICODE.utf8.encode('windows-1252', 'ignore')
 win1252able = Win1252able()
+
+
+class BytesLike:
+    """looks a bit like python3 bytes, emulating a list of ints"""
+    def __iter__(self):
+        return iter(range(10))
+byteslike = BytesLike()
+bytesvalue = b''.join(
+    chr(b) if PY2 else bytes([b])
+    for b in byteslike
+)
 
 
 both_from_funcs = pytest.mark.parametrize('testfunc', (from_bytes, from_utf8))
@@ -116,6 +129,12 @@ def test_from_utf8_with_win1252able_object():
         from_utf8(win1252able)
 
 
+@both_from_funcs
+def test_from_funcs_with_byteslike_object(testfunc):
+    expected = repr(byteslike) if PY2 else bytesvalue.decode('latin1')
+    assert expected == testfunc(byteslike)
+
+
 @both_to_funcs
 def test_to_bytes_from_unicode(testfunc):
     assert UNICODE.utf8.encode('utf8') == testfunc(UNICODE.utf8)
@@ -150,11 +169,18 @@ def test_to_funcs_with_win1252able_object(testfunc):
     assert UNICODE.win1252.encode('windows-1252') == testfunc(win1252able)
 
 
+@both_to_funcs
+def test_to_funcs_with_byteslike_object(testfunc):
+    expected = repr(byteslike) if PY2 else bytesvalue
+    assert expected == testfunc(byteslike)
+
+
 @pytest.mark.parametrize('value', (
     UNICODE.utf8,
     unicodable,
     utf8able,
     win1252able,
+    byteslike,
 ))
 def test_internet_roundtrip(value):
     assert from_bytes(value) == to_bytes(value).decode('internet')
@@ -181,6 +207,7 @@ def test_windows_roundtrip(value):
     UNICODE.utf8,
     utf8able,
     win1252able,
+    byteslike,
 ))
 def test_to_bytes_is_like_bytes(value):
     # pylint:disable=bare-except
