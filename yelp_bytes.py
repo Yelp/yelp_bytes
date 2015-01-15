@@ -1,22 +1,40 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from yelp_encodings import internet
 
 
 internet.register()
+unicode = type("")
 
 
-def to_bytes(obj, encoding='internet'):
+def bytes_or_unicode(obj):
+    """Determine of an object is more canonically represented as bytes or unicode."""
+    mro = type(obj).mro()
+    if bytes in mro:
+        return bytes, obj
+    elif unicode in mro:
+        return unicode, obj
+
+    try:
+        return unicode, unicode(obj)
+    except UnicodeDecodeError:
+        return bytes, bytes(obj)
+
+
+def to_bytes(obj, encoding='internet', errors='strict'):
     """
     Encode values to utf-8 bytestrings (str).
     str-type values are returned as-is, with the fervent hope that they're already utf8.
 
-    This function always returns utf8-encoded bytes.
+    This function always returns utf8-encoded bytes (unless given non-utf8 bytes).
     """
-    if isinstance(obj, str):
-        # In this case we have to assume it's already utf8.
+    type, obj = bytes_or_unicode(obj)
+    if type is bytes:
         return obj
     else:
-        return unicode(obj).encode(encoding)
+        # This is definitely unicode.
+        return obj.encode(encoding, errors)  # pylint:disable=maybe-no-member
 
 
 def from_bytes(obj, encoding='internet', errors='strict'):
@@ -26,22 +44,16 @@ def from_bytes(obj, encoding='internet', errors='strict'):
 
     This function always returns unicode.
     """
-    if isinstance(obj, unicode):
+    type, obj = bytes_or_unicode(obj)
+    if type is bytes:
+        return obj.decode(encoding, errors)
+    else:
         return obj
-    try:
-        return unicode(obj, encoding, errors)
-    except TypeError:
-        # We're only allowed to specify an encoding for str values, for whatever reason.
-        try:
-            return unicode(obj)
-        except UnicodeDecodeError:
-            # You get this (for example) when an error object contains utf8 bytes.
-            return unicode(str(obj), encoding, errors)
 
 
-def to_utf8(obj):
+def to_utf8(obj, errors='strict'):
     """Encode unicode text to utf8 bytes (str)."""
-    return to_bytes(obj, encoding='utf-8')
+    return to_bytes(obj, encoding='utf-8', errors=errors)
 
 
 def from_utf8(obj, errors='strict'):

@@ -1,5 +1,14 @@
 [MESSAGES CONTROL]
-disable=missing-docstring,abstract-method,old-style-class,no-init,no-self-use,too-many-public-methods,invalid-name
+disable=
+    missing-docstring,
+    abstract-method,
+    old-style-class,
+    no-init,
+    no-self-use,
+    too-many-public-methods,
+    invalid-name,
+    redefined-builtin,
+    locally-disabled,
 
 [REPORTS]
 output-format=colorized
