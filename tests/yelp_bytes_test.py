@@ -110,12 +110,13 @@ def test_from_funcs_with_unicodable_object(testfunc):
 
 @both_from_funcs
 def test_from_funcs_with_utf8able_object(testfunc):
-
-    assert UNICODE.utf8 == testfunc(utf8able)
+    expected = UNICODE.utf8 if PY2 else repr(utf8able)
+    assert expected == testfunc(utf8able)
 
 
 def test_from_bytes_with_win1252able_object():
-    assert UNICODE.win1252 == from_bytes(win1252able)
+    expected = UNICODE.win1252 if PY2 else repr(win1252able)
+    assert expected == from_bytes(win1252able)
 
 
 def test_from_utf8_with_win1252():
@@ -125,13 +126,16 @@ def test_from_utf8_with_win1252():
 
 
 def test_from_utf8_with_win1252able_object():
-    with pytest.raises(UnicodeDecodeError):
-        from_utf8(win1252able)
+    if PY2:
+        with pytest.raises(UnicodeDecodeError):
+            from_utf8(win1252able)
+    else:
+        assert repr(win1252able) == from_utf8(win1252able)
 
 
 @both_from_funcs
 def test_from_funcs_with_byteslike_object(testfunc):
-    expected = repr(byteslike) if PY2 else bytesvalue.decode('latin1')
+    expected = repr(byteslike)
     assert expected == testfunc(byteslike)
 
 
@@ -161,17 +165,21 @@ def test_to_funcs_with_unicodable_object(testfunc):
 
 @both_to_funcs
 def test_to_funcs_with_utf8able_object(testfunc):
-    assert UNICODE.utf8.encode('UTF-8') == testfunc(utf8able)
+    expected = UNICODE.utf8 if PY2 else repr(utf8able)
+    expected = expected.encode('UTF-8')
+    assert expected == testfunc(utf8able)
 
 
 @both_to_funcs
 def test_to_funcs_with_win1252able_object(testfunc):
-    assert UNICODE.win1252.encode('windows-1252') == testfunc(win1252able)
+    expected = UNICODE.win1252 if PY2 else repr(win1252able)
+    expected = expected.encode('windows-1252')
+    assert expected == testfunc(win1252able)
 
 
 @both_to_funcs
 def test_to_funcs_with_byteslike_object(testfunc):
-    expected = repr(byteslike) if PY2 else bytesvalue
+    expected = repr(byteslike).encode('US-ASCII')
     assert expected == testfunc(byteslike)
 
 
@@ -209,10 +217,10 @@ def test_windows_roundtrip(value):
     win1252able,
     byteslike,
 ))
-def test_to_bytes_is_like_bytes(value):
-    # pylint:disable=bare-except
+def test_to_bytes_is_like_str_encode(value):
+    # pylint:disable=bare-except,broad-except
     try:
-        bytes_result = bytes(value)
+        bytes_result = str(value) if PY2 else str(value).encode('US-ASCII')
     except:
         bytes_result = '(error)'
 

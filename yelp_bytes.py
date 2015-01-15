@@ -6,7 +6,6 @@ from yelp_encodings import internet
 
 internet.register()
 unicode = type("")
-PY2 = str is bytes
 
 
 def bytes_or_unicode(obj):
@@ -16,18 +15,11 @@ def bytes_or_unicode(obj):
         return bytes, obj
     elif unicode in mro:
         return unicode, obj
-    elif PY2:
-        # in python2, all objects are trivially represented as bytes, so we try unicode first.
-        try:
-            return unicode, unicode(obj)
-        except UnicodeDecodeError:
-            return bytes, bytes(obj)
-    else:  # PY3
-        # in python3, all objects are trivially represented as unicode, so we try bytes first.
-        try:
-            return bytes, bytes(obj)
-        except (UnicodeEncodeError, TypeError):
-            return unicode, unicode(obj)
+
+    try:
+        return unicode, unicode(obj)
+    except UnicodeDecodeError:
+        return bytes, bytes(obj)
 
 
 def to_bytes(obj, encoding='internet', errors='strict'):
