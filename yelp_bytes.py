@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import six
 from yelp_encodings import internet
 
 
 internet.register()
-unicode = type("")
 
 
 def bytes_or_unicode(obj):
     """Determine of an object is more canonically represented as bytes or unicode."""
     mro = type(obj).mro()
-    if bytes in mro:
-        return bytes, obj
-    elif unicode in mro:
-        return unicode, obj
+    if six.binary_type in mro:
+        return six.binary_type, obj
+    elif six.text_type in mro:
+        return six.text_type, obj
 
     try:
-        return unicode, unicode(obj)
+        return six.text_type, six.text_type(obj)
     except UnicodeDecodeError:
-        return bytes, bytes(obj)
+        return six.binary_type, six.binary_type(obj)
 
 
 def to_bytes(obj, encoding='internet', errors='strict'):
@@ -30,7 +30,7 @@ def to_bytes(obj, encoding='internet', errors='strict'):
     This function always returns utf8-encoded bytes (unless given non-utf8 bytes).
     """
     type, obj = bytes_or_unicode(obj)
-    if type is bytes:
+    if type is six.binary_type:
         return obj
     else:
         # This is definitely unicode.
@@ -45,7 +45,7 @@ def from_bytes(obj, encoding='internet', errors='strict'):
     This function always returns unicode.
     """
     type, obj = bytes_or_unicode(obj)
-    if type is bytes:
+    if type is six.binary_type:
         return obj.decode(encoding, errors)
     else:
         return obj

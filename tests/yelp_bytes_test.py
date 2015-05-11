@@ -2,8 +2,9 @@
 from __future__ import unicode_literals
 
 import pytest
+import six
 
-from yelp_bytes import to_bytes, to_utf8, from_bytes, from_utf8, unicode
+from yelp_bytes import to_bytes, to_utf8, from_bytes, from_utf8
 
 PY2 = str is bytes
 
@@ -76,7 +77,7 @@ def test_with_unicode(testfunc):
 @both_from_funcs
 def test_with_unicode_subclass(testfunc):
     # Unicode subclasses (eg markupsafe) also go unmolested.
-    class MyText(unicode):
+    class MyText(six.text_type):
         pass
     mytext = MyText("abcdef")
     assert mytext is testfunc(mytext)
