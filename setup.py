@@ -15,7 +15,7 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
     ],
-    install_requires=['yelp_encodings'],
+    install_requires=['six', 'yelp_encodings'],
 
     py_modules=['yelp_bytes'],
 )
