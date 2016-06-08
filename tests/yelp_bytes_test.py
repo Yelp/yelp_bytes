@@ -227,7 +227,7 @@ def test_to_bytes_is_like_str_encode(value):
     try:
         to_bytes_result = to_bytes(value, 'US-ASCII')
     except:
-        to_bytes_result = '(error)'
+        to_bytes_result = '(error)'  # pylint: disable=R0204
 
     assert bytes_result == to_bytes_result
 
