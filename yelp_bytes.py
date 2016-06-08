@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import six
 
 from yelp_encodings import internet
 
 
 internet.register()
 unicode = type("")
+
+PY2 = str is bytes
 
 
 def bytes_or_unicode(obj):
@@ -61,11 +62,12 @@ def from_utf8(obj, errors='strict'):
     """Decode utf8 bytes (str) to unicode text."""
     return from_bytes(obj, encoding='utf-8', errors=errors)
 
-def to_native(obj, errors='strict'):
-    """ """
+
+def to_native(obj, errors='strict'):  # pragma: no cover
+    """ returns a native string regardless of py env """
     if isinstance(obj, str):
         return obj
-    elif six.PY2:
-      return obj.encode('UTF-8')
-    # else PY3
-    return obj.decode('UTF-8')
+    elif PY2:
+        return obj.encode('UTF-8', errors)
+    else:  # PY3
+        return obj.decode('UTF-8', errors)

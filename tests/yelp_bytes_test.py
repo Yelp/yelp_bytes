@@ -232,26 +232,15 @@ def test_to_bytes_is_like_str_encode(value):
     assert bytes_result == to_bytes_result
 
 
-
-class UNICODE:
-    ascii = 'A'  # The most basic of unicode.
-    latin1 = ascii + 'ü'  # U-umlaut. This is defined in latin1 but not ascii.
-    win1252 = latin1 + '€'  # Euro sign. This is defined in windows-1252, but not latin1.
-    bmp = win1252 + 'Ł'  # Polish crossed-L. This requires at least a two-byte encoding.
-    utf8 = bmp + '🐵'  # Monkey-face emoji. This requires at least a three-byte encoding.
-
- 
-def test_to_native_with_unicode_objects():
-    assert to_native(UNICODE.ascii) == UNICODE.ascii if PY2 else UNICODE.ascii.encode('UTF-8')
-
-    assert to_native(UNICODE.latin1) == UNICODE.latin1.encode('UTF-8') if PY2 else UNICODE.latin1
-
-    assert to_native(UNICODE.win1252) == UNICODE.win1252.encode('UTF-8') if PY2 else UNICODE.win1252
-
-    assert to_native(UNICODE.bmp) == UNICODE.bmp.encode('UTF-8') if PY2 else UNICODE.bmp
-
-    assert to_native(UNICODE.utf8) == UNICODE.utf8.encode('UTF-8') if PY2 else UNICODE.utf8
-    #assert UNICODE.utf8 == to_native(UNICODE.utf8)
-
-
-    assert to_native(b'bytestring') == 'bytestring' if PY2 else 'bytestring'.encode('UTF-8')
+@pytest.mark.parametrize('value', (
+    UNICODE.ascii,
+    UNICODE.latin1,
+    UNICODE.win1252,
+    UNICODE.bmp,
+    UNICODE.utf8,
+    b"this is a bytestring",
+    u"this is a unicode string",
+    "native string"
+))
+def test_to_native_with_unicode_objects(value):
+    assert to_native(value) == value.encode('UTF-8') if PY2 else value
