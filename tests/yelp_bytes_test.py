@@ -238,9 +238,19 @@ def test_to_bytes_is_like_str_encode(value):
     UNICODE.win1252,
     UNICODE.bmp,
     UNICODE.utf8,
-    b"this is a bytestring",
     u"this is a unicode string",
     str("native string")
 ))
-def test_to_native_with_unicode_objects(value):
-    assert to_native(value) == value.encode('UTF-8') if PY2 else value
+def test_to_native_with_unicode_objects(value):  # pragma: no cover
+    if PY2:
+        assert to_native(value) == value.encode('UTF-8')
+    else:
+        assert to_native(value) == value
+
+
+def test_to_native_woth_byte_string():  # pragma: no cover
+    value = b"this is a bytestring"
+    if PY2:
+        assert to_native(value) == value
+    else:
+        assert to_native(value) == value.decode('UTF-8')
