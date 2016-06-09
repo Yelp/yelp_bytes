@@ -218,7 +218,7 @@ def test_windows_roundtrip(value):
     byteslike,
 ))
 def test_to_bytes_is_like_str_encode(value):
-    # pylint:disable=bare-except,broad-except
+    # pylint:disable=bare-except,broad-except,redefined-variable-type
     try:
         bytes_result = str(value) if PY2 else str(value).encode('US-ASCII')
     except:
@@ -227,7 +227,7 @@ def test_to_bytes_is_like_str_encode(value):
     try:
         to_bytes_result = to_bytes(value, 'US-ASCII')
     except:
-        to_bytes_result = '(error)'  # pylint: disable=R0204
+        to_bytes_result = '(error)'
 
     assert bytes_result == to_bytes_result
 
@@ -240,7 +240,7 @@ def test_to_bytes_is_like_str_encode(value):
     UNICODE.utf8,
     b"this is a bytestring",
     u"this is a unicode string",
-    "native string"
+    str("native string")
 ))
 def test_to_native_with_unicode_objects(value):
     assert to_native(value) == value.encode('UTF-8') if PY2 else value
