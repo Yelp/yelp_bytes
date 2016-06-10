@@ -63,11 +63,11 @@ def from_utf8(obj, errors='strict'):
     return from_bytes(obj, encoding='utf-8', errors=errors)
 
 
-def to_native(obj, errors='strict'):  # pragma: no cover
+def to_native(obj, encoding='internet', errors='strict'):  # pragma: no cover
     """ returns a native string regardless of py env """
     if isinstance(obj, str):
         return obj
     elif PY2:
-        return obj.encode('UTF-8', errors)
+        return to_bytes(obj, encoding, errors)
     else:  # PY3
-        return obj.decode('UTF-8', errors)
+        return from_bytes(obj, encoding, errors)

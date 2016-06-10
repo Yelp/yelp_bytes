@@ -3,9 +3,7 @@ from __future__ import unicode_literals
 
 import pytest
 
-from yelp_bytes import to_bytes, to_utf8, to_native, from_bytes, from_utf8, unicode
-
-PY2 = str is bytes
+from yelp_bytes import to_bytes, to_utf8, to_native, from_bytes, from_utf8, unicode, PY2
 
 
 # Define some interesting unicode inputs
@@ -18,7 +16,7 @@ class UNICODE:
 
 
 def dunder_compat(cls):
-    if str is bytes:
+    if PY2:
         if hasattr(cls, '__bytes__'):
             cls.__str__ = cls.__bytes__
             del cls.__bytes__
@@ -233,13 +231,10 @@ def test_to_bytes_is_like_str_encode(value):
 
 
 @pytest.mark.parametrize('value', (
-    UNICODE.ascii,
     UNICODE.latin1,
     UNICODE.win1252,
     UNICODE.bmp,
     UNICODE.utf8,
-    u"this is a unicode string",
-    str("native string")
 ))
 def test_to_native_with_unicode_objects(value):  # pragma: no cover
     if PY2:
@@ -248,9 +243,29 @@ def test_to_native_with_unicode_objects(value):  # pragma: no cover
         assert to_native(value) == value
 
 
-def test_to_native_woth_byte_string():  # pragma: no cover
-    value = b"this is a bytestring"
+@pytest.mark.parametrize('value', (
+    UNICODE.latin1.encode('latin1'),
+    UNICODE.win1252.encode('cp1252'),
+    UNICODE.bmp.encode('UTF-8'),
+    UNICODE.utf8.encode('UTF-8'),
+))
+def test_to_native_with_byte_string(value):  # pragma: no cover
     if PY2:
         assert to_native(value) == value
     else:
-        assert to_native(value) == value.decode('UTF-8')
+        assert to_native(value) == from_bytes(value)
+
+
+def test_to_native_unicodable():
+    expected = UNICODE.utf8.encode('UTF-8') if PY2 else UNICODE.utf8
+    assert to_native(unicodable) == expected
+
+
+def test_to_native_utf8able():
+    expected = UNICODE.utf8.encode('UTF-8') if PY2 else repr(utf8able)
+    assert to_native(utf8able) == expected
+
+
+def test_to_native_win1252able():
+    expected = UNICODE.utf8.encode('cp1252', 'ignore') if PY2 else repr(win1252able)
+    assert to_native(win1252able) == expected
