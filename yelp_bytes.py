@@ -7,6 +7,8 @@ from yelp_encodings import internet
 internet.register()
 unicode = type("")
 
+PY2 = str is bytes
+
 
 def bytes_or_unicode(obj):
     """Determine of an object is more canonically represented as bytes or unicode."""
@@ -59,3 +61,13 @@ def to_utf8(obj, errors='strict'):
 def from_utf8(obj, errors='strict'):
     """Decode utf8 bytes (str) to unicode text."""
     return from_bytes(obj, encoding='utf-8', errors=errors)
+
+
+def to_native(obj, encoding='internet', errors='strict'):  # pragma: no cover
+    """ returns a native string regardless of py env """
+    if isinstance(obj, str):
+        return obj
+    elif PY2:
+        return to_bytes(obj, encoding, errors)
+    else:  # PY3
+        return from_bytes(obj, encoding, errors)
