@@ -5,22 +5,20 @@ from yelp_encodings import internet
 
 
 internet.register()
-unicode = type("")
 
 PY2 = str is bytes
 
 
 def bytes_or_unicode(obj):
     """Determine of an object is more canonically represented as bytes or unicode."""
-    mro = type(obj).mro()
-    if bytes in mro:
+    if isinstance(obj, bytes):
         return bytes, obj
 
-    if unicode in mro:
-        return unicode, obj
+    if isinstance(obj, str):
+        return str, obj
 
     try:
-        return unicode, unicode(obj)
+        return str, str(obj)
     except UnicodeDecodeError:
         return bytes, bytes(obj)
 

@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import pytest
 
-from yelp_bytes import to_bytes, to_utf8, to_native, from_bytes, from_utf8, unicode, PY2
+from yelp_bytes import to_bytes, to_utf8, to_native, from_bytes, from_utf8, PY2
 
 
 # Define some interesting unicode inputs
@@ -82,7 +82,7 @@ def test_with_unicode(testfunc):
 @both_from_funcs
 def test_with_unicode_subclass(testfunc):
     # Unicode subclasses (eg markupsafe) also go unmolested.
-    class MyText(unicode):
+    class MyText(str):
         pass
     mytext = MyText("abcdef")
     assert mytext is testfunc(mytext)
