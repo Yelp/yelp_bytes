@@ -15,7 +15,8 @@ def bytes_or_unicode(obj):
     mro = type(obj).mro()
     if bytes in mro:
         return bytes, obj
-    elif unicode in mro:
+
+    if unicode in mro:
         return unicode, obj
 
     try:
@@ -34,9 +35,9 @@ def to_bytes(obj, encoding='internet', errors='strict'):
     type, obj = bytes_or_unicode(obj)
     if type is bytes:
         return obj
-    else:
-        # This is definitely unicode.
-        return obj.encode(encoding, errors)  # pylint:disable=maybe-no-member
+
+    # This is definitely unicode.
+    return obj.encode(encoding, errors)  # pylint:disable=maybe-no-member
 
 
 def from_bytes(obj, encoding='internet', errors='strict'):
@@ -49,8 +50,7 @@ def from_bytes(obj, encoding='internet', errors='strict'):
     type, obj = bytes_or_unicode(obj)
     if type is bytes:
         return obj.decode(encoding, errors)
-    else:
-        return obj
+    return obj
 
 
 def to_utf8(obj, errors='strict'):
@@ -67,7 +67,8 @@ def to_native(obj, encoding='internet', errors='strict'):  # pragma: no cover
     """ returns a native string regardless of py env """
     if isinstance(obj, str):
         return obj
-    elif PY2:
+
+    if PY2:
         return to_bytes(obj, encoding, errors)
-    else:  # PY3
-        return from_bytes(obj, encoding, errors)
+    # PY3
+    return from_bytes(obj, encoding, errors)

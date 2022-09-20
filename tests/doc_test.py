@@ -1,5 +1,6 @@
 import sys
 
+import doctest
 import pytest
 
 
@@ -8,11 +9,10 @@ import pytest
     reason="Python 3 doesn't have the UnicodeEncodeError problem",
 )
 def test_docs():
-    from doctest import testfile, ELLIPSIS
-    failures, _ = testfile(
+    failures, _ = doctest.testfile(
         'README.md',
         module_relative=False,
         encoding='UTF-8',
-        optionflags=ELLIPSIS,
+        optionflags=doctest.ELLIPSIS,
     )
     assert failures == 0

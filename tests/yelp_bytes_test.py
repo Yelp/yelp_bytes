@@ -224,7 +224,7 @@ def test_windows_roundtrip(value):
     byteslike,
 ))
 def test_to_bytes_is_like_str_encode(value):
-    # pylint:disable=bare-except,broad-except,redefined-variable-type
+    # pylint:disable=bare-except,broad-except
     try:
         bytes_result = str(value) if PY2 else str(value).encode('US-ASCII')
     except Exception:
