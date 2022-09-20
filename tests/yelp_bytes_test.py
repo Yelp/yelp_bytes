@@ -31,6 +31,8 @@ class Unicodable:
     """unicode() is fine, but bytes() will barf"""
     def __unicode__(self):
         return UNICODE.utf8
+
+
 unicodable = Unicodable()
 
 
@@ -39,6 +41,8 @@ class Utf8able:
     """bytes() and decode('UTF-8') is fine, but unicode() will barf"""
     def __bytes__(self):
         return UNICODE.utf8.encode('utf8')
+
+
 utf8able = Utf8able()
 
 
@@ -47,6 +51,8 @@ class Win1252able:
     """bytes() is fine, but unicode() and decode('UTF-8') will barf"""
     def __bytes__(self):
         return UNICODE.utf8.encode('windows-1252', 'ignore')
+
+
 win1252able = Win1252able()
 
 
@@ -54,6 +60,8 @@ class BytesLike:
     """looks a bit like python3 bytes, emulating a list of ints"""
     def __iter__(self):
         return iter(range(10))
+
+
 byteslike = BytesLike()
 bytesvalue = b''.join(
     chr(b) if PY2 else bytes([b])
@@ -219,12 +227,12 @@ def test_to_bytes_is_like_str_encode(value):
     # pylint:disable=bare-except,broad-except,redefined-variable-type
     try:
         bytes_result = str(value) if PY2 else str(value).encode('US-ASCII')
-    except:
+    except Exception:
         bytes_result = '(error)'
 
     try:
         to_bytes_result = to_bytes(value, 'US-ASCII')
-    except:
+    except Exception:
         to_bytes_result = '(error)'
 
     assert bytes_result == to_bytes_result
