@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import pytest
 
-from yelp_bytes import to_bytes, to_utf8, to_native, from_bytes, from_utf8, PY2
+from yelp_bytes import to_bytes, to_utf8, to_native, from_bytes, from_utf8
 
 
 # Define some interesting unicode inputs
@@ -16,11 +16,7 @@ class UNICODE:
 
 
 def dunder_compat(cls):
-    if PY2:
-        if hasattr(cls, '__bytes__'):
-            cls.__str__ = cls.__bytes__
-            del cls.__bytes__
-    elif hasattr(cls, '__unicode__'):
+    if hasattr(cls, '__unicode__'):
         cls.__str__ = cls.__unicode__
         del cls.__unicode__
     return cls
@@ -64,7 +60,7 @@ class BytesLike:
 
 byteslike = BytesLike()
 bytesvalue = b''.join(
-    chr(b) if PY2 else bytes([b])
+    bytes([b])
     for b in byteslike
 )
 
@@ -116,12 +112,12 @@ def test_from_funcs_with_unicodable_object(testfunc):
 
 @both_from_funcs
 def test_from_funcs_with_utf8able_object(testfunc):
-    expected = UNICODE.utf8 if PY2 else repr(utf8able)
+    expected = repr(utf8able)
     assert expected == testfunc(utf8able)
 
 
 def test_from_bytes_with_win1252able_object():
-    expected = UNICODE.win1252 if PY2 else repr(win1252able)
+    expected = repr(win1252able)
     assert expected == from_bytes(win1252able)
 
 
@@ -132,11 +128,7 @@ def test_from_utf8_with_win1252():
 
 
 def test_from_utf8_with_win1252able_object():
-    if PY2:
-        with pytest.raises(UnicodeDecodeError):
-            from_utf8(win1252able)
-    else:
-        assert repr(win1252able) == from_utf8(win1252able)
+    assert repr(win1252able) == from_utf8(win1252able)
 
 
 @both_from_funcs
@@ -171,14 +163,14 @@ def test_to_funcs_with_unicodable_object(testfunc):
 
 @both_to_funcs
 def test_to_funcs_with_utf8able_object(testfunc):
-    expected = UNICODE.utf8 if PY2 else repr(utf8able)
+    expected = repr(utf8able)
     expected = expected.encode('UTF-8')
     assert expected == testfunc(utf8able)
 
 
 @both_to_funcs
 def test_to_funcs_with_win1252able_object(testfunc):
-    expected = UNICODE.win1252 if PY2 else repr(win1252able)
+    expected = repr(win1252able)
     expected = expected.encode('windows-1252')
     assert expected == testfunc(win1252able)
 
@@ -226,7 +218,7 @@ def test_windows_roundtrip(value):
 def test_to_bytes_is_like_str_encode(value):
     # pylint:disable=bare-except,broad-except
     try:
-        bytes_result = str(value) if PY2 else str(value).encode('US-ASCII')
+        bytes_result = str(value).encode('US-ASCII')
     except Exception:
         bytes_result = '(error)'
 
@@ -245,10 +237,7 @@ def test_to_bytes_is_like_str_encode(value):
     UNICODE.utf8,
 ))
 def test_to_native_with_unicode_objects(value):  # pragma: no cover
-    if PY2:
-        assert to_native(value) == value.encode('UTF-8')
-    else:
-        assert to_native(value) == value
+    assert to_native(value) == value
 
 
 @pytest.mark.parametrize('value', (
@@ -258,22 +247,19 @@ def test_to_native_with_unicode_objects(value):  # pragma: no cover
     UNICODE.utf8.encode('UTF-8'),
 ))
 def test_to_native_with_byte_string(value):  # pragma: no cover
-    if PY2:
-        assert to_native(value) == value
-    else:
-        assert to_native(value) == from_bytes(value)
+    assert to_native(value) == from_bytes(value)
 
 
 def test_to_native_unicodable():
-    expected = UNICODE.utf8.encode('UTF-8') if PY2 else UNICODE.utf8
+    expected = UNICODE.utf8
     assert to_native(unicodable) == expected
 
 
 def test_to_native_utf8able():
-    expected = UNICODE.utf8.encode('UTF-8') if PY2 else repr(utf8able)
+    expected = repr(utf8able)
     assert to_native(utf8able) == expected
 
 
 def test_to_native_win1252able():
-    expected = UNICODE.utf8.encode('cp1252', 'ignore') if PY2 else repr(win1252able)
+    expected = repr(win1252able)
     assert to_native(win1252able) == expected

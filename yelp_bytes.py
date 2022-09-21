@@ -6,8 +6,6 @@ from yelp_encodings import internet
 
 internet.register()
 
-PY2 = str is bytes
-
 
 def bytes_or_unicode(obj):
     """Determine of an object is more canonically represented as bytes or unicode."""
@@ -66,7 +64,4 @@ def to_native(obj, encoding='internet', errors='strict'):  # pragma: no cover
     if isinstance(obj, str):
         return obj
 
-    if PY2:
-        return to_bytes(obj, encoding, errors)
-    # PY3
     return from_bytes(obj, encoding, errors)
