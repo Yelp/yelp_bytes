@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import pytest
 
-from yelp_bytes import to_bytes, to_utf8, to_native, from_bytes, from_utf8
+from yelp_bytes import from_bytes
+from yelp_bytes import from_utf8
+from yelp_bytes import to_bytes
+from yelp_bytes import to_native
+from yelp_bytes import to_utf8
 
 
 # Define some interesting unicode inputs
