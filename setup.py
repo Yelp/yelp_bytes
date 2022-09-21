@@ -19,6 +19,9 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
     python_requires='>=3.6',
+    package_data={
+        'yelp_bytes': ['py.typed'],
+    },
     install_requires=['yelp_encodings'],
 
     py_modules=['yelp_bytes'],
