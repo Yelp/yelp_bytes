@@ -18,7 +18,7 @@ def bytes_or_unicode(obj):
         return bytes, bytes(obj)
 
 
-def to_bytes(obj, encoding='internet', errors='strict'):
+def to_bytes(obj, encoding="internet", errors="strict"):
     """
     Encode values to utf-8 bytestrings (str).
     str-type values are returned as-is, with the fervent hope that they're already utf8.
@@ -33,7 +33,7 @@ def to_bytes(obj, encoding='internet', errors='strict'):
     return obj.encode(encoding, errors)  # pylint:disable=maybe-no-member
 
 
-def from_bytes(obj, encoding='internet', errors='strict'):
+def from_bytes(obj, encoding="internet", errors="strict"):
     """
     Decode values to unambiguous unicode characters.
     The "internet" codec attempts to use utf8, but falls back to latin1 if there are obviously non-utf8 bytes.
@@ -46,18 +46,18 @@ def from_bytes(obj, encoding='internet', errors='strict'):
     return obj
 
 
-def to_utf8(obj, errors='strict'):
+def to_utf8(obj, errors="strict"):
     """Encode unicode text to utf8 bytes (str)."""
-    return to_bytes(obj, encoding='utf-8', errors=errors)
+    return to_bytes(obj, encoding="utf-8", errors=errors)
 
 
-def from_utf8(obj, errors='strict'):
+def from_utf8(obj, errors="strict"):
     """Decode utf8 bytes (str) to unicode text."""
-    return from_bytes(obj, encoding='utf-8', errors=errors)
+    return from_bytes(obj, encoding="utf-8", errors=errors)
 
 
-def to_native(obj, encoding='internet', errors='strict'):  # pragma: no cover
-    """ returns a native string regardless of py env """
+def to_native(obj, encoding="internet", errors="strict"):  # pragma: no cover
+    """returns a native string regardless of py env"""
     if isinstance(obj, str):
         return obj
 
