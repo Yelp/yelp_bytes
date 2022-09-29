@@ -41,7 +41,7 @@ encountered. One of the more common is putting non-ascii unicode into an error m
 
     python
     >>> error = Exception(euro)
-    >>> print(error)
+    >>> print(error)  # doctest: +SKIP
     Traceback (most recent call last):
         ...
     UnicodeEncodeError: 'ascii' codec can't encode character u'\u20ac' in position 0: ordinal not in range(128)

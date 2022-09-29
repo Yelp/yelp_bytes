@@ -12,20 +12,14 @@ setup(
     platforms='all',
     classifiers=[
         'License :: Public Domain',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
+    python_requires='>=3.6',
     install_requires=['yelp_encodings'],
 
     py_modules=['yelp_bytes'],
-    options={
-        'bdist_wheel': {
-            'universal': 1,
-        }
-    },
 )

@@ -2,9 +2,6 @@
 disable=
     missing-docstring,
     abstract-method,
-    old-style-class,
-    no-init,
-    no-self-use,
     too-many-public-methods,
     invalid-name,
     redefined-builtin,

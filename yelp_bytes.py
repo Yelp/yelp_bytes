@@ -5,21 +5,18 @@ from yelp_encodings import internet
 
 
 internet.register()
-unicode = type("")
-
-PY2 = str is bytes
 
 
 def bytes_or_unicode(obj):
     """Determine of an object is more canonically represented as bytes or unicode."""
-    mro = type(obj).mro()
-    if bytes in mro:
+    if isinstance(obj, bytes):
         return bytes, obj
-    elif unicode in mro:
-        return unicode, obj
+
+    if isinstance(obj, str):
+        return str, obj
 
     try:
-        return unicode, unicode(obj)
+        return str, str(obj)
     except UnicodeDecodeError:
         return bytes, bytes(obj)
 
@@ -34,9 +31,9 @@ def to_bytes(obj, encoding='internet', errors='strict'):
     type, obj = bytes_or_unicode(obj)
     if type is bytes:
         return obj
-    else:
-        # This is definitely unicode.
-        return obj.encode(encoding, errors)  # pylint:disable=maybe-no-member
+
+    # This is definitely unicode.
+    return obj.encode(encoding, errors)  # pylint:disable=maybe-no-member
 
 
 def from_bytes(obj, encoding='internet', errors='strict'):
@@ -49,8 +46,7 @@ def from_bytes(obj, encoding='internet', errors='strict'):
     type, obj = bytes_or_unicode(obj)
     if type is bytes:
         return obj.decode(encoding, errors)
-    else:
-        return obj
+    return obj
 
 
 def to_utf8(obj, errors='strict'):
@@ -67,7 +63,5 @@ def to_native(obj, encoding='internet', errors='strict'):  # pragma: no cover
     """ returns a native string regardless of py env """
     if isinstance(obj, str):
         return obj
-    elif PY2:
-        return to_bytes(obj, encoding, errors)
-    else:  # PY3
-        return from_bytes(obj, encoding, errors)
+
+    return from_bytes(obj, encoding, errors)
