@@ -5,7 +5,7 @@ setup(
     name='yelp_bytes',
     description='Utilities for dealing with byte strings, invented and maintained by Yelp.',
     url='https://github.com/Yelp/yelp_bytes',
-    version='0.4.3',
+    version='0.4.4',
 
     author='Buck Evan',
     author_email='buck@yelp.com',
