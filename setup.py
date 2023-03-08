@@ -17,6 +17,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: PyPy',
+        'License :: OSI Approved :: The Unlicense (Unlicense)',
     ],
     python_requires='>=3.6',
     package_data={
