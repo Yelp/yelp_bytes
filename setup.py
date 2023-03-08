@@ -1,3 +1,4 @@
+from setuptools import find_packages
 from setuptools import setup
 
 setup(
@@ -23,6 +24,5 @@ setup(
         'yelp_bytes': ['py.typed'],
     },
     install_requires=['yelp_encodings'],
-
-    py_modules=['yelp_bytes'],
+    packages=find_packages(exclude=["tests*"]),
 )
